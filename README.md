@@ -3,54 +3,41 @@
 
 <img src="examples/laneLines_thirdPass.jpg" width="480" alt="Combined Image" />
 
-Overview
+Goal
 ---
 
-When we drive, we use our eyes to decide where to go.  The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle.  Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
-
-In this project you will detect lane lines in images using Python and OpenCV.  OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.  
-
-To complete the project, two files will be submitted: a file containing project code and a file containing a brief write up explaining your solution. We have included template files to be used both for the [code](https://github.com/udacity/CarND-LaneLines-P1/blob/master/P1.ipynb) and the [writeup](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md).The code file is called P1.ipynb and the writeup template is writeup_template.md 
-
-To meet specifications in the project, take a look at the requirements in the [project rubric](https://review.udacity.com/#!/rubrics/322/view)
+The goals / steps of this project are the following:
+* Make a pipeline that finds lane lines on the road
+* Reflect on your work in a written report
 
 
-Creating a Great Writeup
+Reflection
 ---
-For this project, a great writeup should provide a detailed response to the "Reflection" section of the [project rubric](https://review.udacity.com/#!/rubrics/322/view). There are three parts to the reflection:
-
-1. Describe the pipeline
-
-2. Identify any shortcomings
-
-3. Suggest possible improvements
-
-We encourage using images in your writeup to demonstrate how your pipeline works.  
-
-All that said, please be concise!  We're not looking for you to write a book here: just a brief description.
-
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup. Here is a link to a [writeup template file](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md). 
-
-
-The Project
----
-
-## If you have already installed the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) you should be good to go!   If not, you should install the starter kit to get started on this project. ##
-
-**Step 1:** Set up the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) if you haven't already.
-
-**Step 2:** Open the code in a Jupyter Notebook
-
-You will complete the project code in a Jupyter notebook.  If you are unfamiliar with Jupyter Notebooks, check out [Udacity's free course on Anaconda and Jupyter Notebooks](https://classroom.udacity.com/courses/ud1111) to get started.
-
-Jupyter is an Ipython notebook where you can run blocks of code and see results interactively.  All the code for this project is contained in a Jupyter notebook. To start Jupyter in your browser, use terminal to navigate to your project directory and then run the following command at the terminal prompt (be sure you've activated your Python 3 carnd-term1 environment as described in the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) installation instructions!):
-
-`> jupyter notebook`
-
-A browser window will appear showing the contents of the current directory.  Click on the file called "P1.ipynb".  Another browser window will appear displaying the notebook.  Follow the instructions in the notebook to complete the project.  
-
-**Step 3:** Complete the project and submit both the Ipython notebook and the project writeup
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
+1. Describe your pipeline. 
+As part of the description, explain how you modified the draw_lines() function
+For the project 1, finding lane lines on the road, my algorithm includes five steps to label the lane lines.  
+1.	Transfer the color images into grayscale images.  
+2.	Apply the gaussian filter on the grayscale images, the kernel size is 5.
+3.	Apply the canny edge detection to find the edges.  Set the low threshold is equal to 50, and the high threshold is equal to 150.
+4.	Select the region of interest.  The mask size is determined by four vertices, and the vertices position is determined by the following equations:
+v1 = (0, image_height)
+v2 = (image_width/2 - image_width*.01), image_height/2 + image_height*.08)
+v3 = (image_width/2 + image_width*.01), image_height/2 + image_height*.08)
+v4 = (image_width, image_height)
+5.	Employ the Hough transform on the output images from step 4.  After trying different values of the parameter to achieve best performance (Only label the lane line clearly), the final parameter values are shown below:
+rho=2
+theta=np.pi/180
+threshold=65
+min_line_len=40
+max_line_gap=250
+The larger threshold and max_line_gap will lead the labeled lane line longer and less noise
+Based on these five steps, I can find the position and labeled both left and right lane lines.
+However, the labeled lane line is the combination of some disconnected short lines, not a continuous line.  So the draw_lines() function need to be modified and extend the labeled lane lines to be continuous long lines.  The algorithm is shown below:
+•	Calculate all slope values of the lines after the Hough transform
+•	Separate the left and right lines based on the sign of the slopes
+•	Averaged slopes values of left and right lines separately
+•	For all the left lines, finding the top points with the smallest y value.  Set that top points with smallest y value as the starting point for the left line.  Do the same thing for all the right lines, finding the starting point for the right line
+•	Based on the averaged slopes and the starting point, calculate the functions of both left and right line 
+•	Calculate the bottom point (End point) value, the y value of the end point is equal to the image height.  Calculate the x value of the end point based on the line function and the y value.
+•	Draw the left and right lane line based on the starting and end points separately.
+With the modified draw_lines() function, test the images and videos:
