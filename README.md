@@ -41,3 +41,5 @@ However, the labeled lane line is the combination of some disconnected short lin
 •	Calculate the bottom point (End point) value, the y value of the end point is equal to the image height.  Calculate the x value of the end point based on the line function and the y value.
 •	Draw the left and right lane line based on the starting and end points separately.
 With the modified draw_lines() function, test the images and videos:
+
+![](test_videos_output/1.png)
