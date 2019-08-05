@@ -43,3 +43,8 @@ However, the labeled lane line is the combination of some disconnected short lin
 With the modified draw_lines() function, test the images and videos:
 
 ![](test_videos_output/1.png)
+![](test_videos_output/2.png)
+![](test_videos_output/3.png)
+![](test_videos_output/4.png)
+![](test_videos_output/5.png)
+![](test_videos_output/6.png)
